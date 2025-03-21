@@ -1,3 +1,16 @@
+<?php
+require_once('database/conn.php');
+
+$tasks = [];
+$sql = $db->query("SELECT * FROM task");
+
+if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
+  $sql->reset();
+  while ($row = $sql->fetchArray(SQLITE3_ASSOC)) {
+    $tasks[] = $row;
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -20,25 +33,31 @@
     </form>
 
     <section id="tasks">
-      <div class="task">
-        <input type="checkbox" name="progress" class="progress">
-        <p class="task-description">Prova Amanhã</p>
-        <div class="task-actions">
-          <a class="action-btn edit-btn">
-            <i class="fa-regular fa-pen-to-square"></i>
-          </a>
-          <a class="action-btn delete-btn">
-            <i class="fa-solid fa-eraser"></i>
-          </a>
-        </div>
+      <?php if (!empty($tasks)): ?>
+      <?php foreach($tasks as $task): ?>
+        <div class="task">
+          <input type="checkbox" name="progress" class="progress" <?= $task['completed'] ? 'checked' : '' ?> >
+          <p class="task-description">
+            <?= $task['description'] ?>
+          </p>
+          <div class="task-actions">
+            <a class="action-btn edit-btn">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </a>
+            <a class="action-btn delete-btn">
+              <i class="fa-solid fa-eraser"></i>
+            </a>
+          </div>
 
-        <form action="" class="to-do_form edit-task hidden">
-          <input type="text" name="description" placeholder="Edit your task here">
-          <button type="submit" class="form-btn confirm-btn">
-            <i class="fa-solid fa-check"></i>
-          </button>
-        </form>
-      </div>
+          <form action="" class="to-do_form edit-task hidden">
+            <input type="text" name="description" placeholder="Edit your task here">
+            <button type="submit" class="form-btn confirm-btn">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </form>
+        </div>
+      <?php endforeach ?>
+      <?php endif ?>
     </section>
   </section>
 
