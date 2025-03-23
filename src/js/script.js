@@ -25,7 +25,6 @@ $(document).ready(function() {
       console.log(response); // Verifique a resposta no console do navegador
 
       if (response && response.success === true) { 
-        alert('Task adicionada'); // Exibe a mensagem de sucesso
         location.reload(); // Recarrega a página para exibir a nova task
       } else {
         alert('Erro ao adicionar a tarefa: ' + (response.error || 'Desconhecido'));
