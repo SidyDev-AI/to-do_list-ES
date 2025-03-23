@@ -10,15 +10,30 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
     $tasks[] = $row;
   }
 }
+
 ## if para processar o formulário para adicionar uma nova task
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['description'])) {
-  if (adicionarTask($db, $_POST['description'])) {
-    $message = "✅ Tarefa adicionada com sucesso!";
-  } else {
-    $message = "❌ Erro ao adicionar a tarefa.";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
+  $descricao = trim($_POST['description']);
+
+  if (strlen($descricao) > 0) {
+      $stmt = $db->prepare("INSERT INTO task (description) VALUES (:description)");
+      $stmt->bindValue(':description', $descricao, SQLITE3_TEXT);
+      
+      if ($stmt->execute()) {
+          $lastId = $db->lastInsertRowID();
+          $newTask = ['id' => $lastId, 'description' => $descricao];
+
+          error_log("Nova task adicionada com ID: " . $lastId); // Log no servidor
+          header('Content-Type: application/json');
+          echo json_encode(['success' => true, 'message' => 'Task adicionada, recarregue a página']);
+          exit();
+      } else {
+          error_log("Erro ao inserir no banco!");
+          header('Content-Type: application/json');
+          echo json_encode(['success' => false, 'error' => 'Erro ao inserir no banco de dados']);
+          exit();
+      }
   }
-    header("Location: index.php?message=" . urlencode($message));
-    exit();
 }
 ?>
 <!DOCTYPE html>

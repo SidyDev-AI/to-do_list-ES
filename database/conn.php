@@ -1,6 +1,6 @@
 <?php
 function conectarBancoDados() {
-  $nomeBancoDados = 'database/to-do database.db';
+  $nomeBancoDados = 'database/tododatabase.db';
 
   try {
     $db = new SQLite3($nomeBancoDados);

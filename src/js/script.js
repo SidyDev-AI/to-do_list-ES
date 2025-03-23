@@ -14,4 +14,25 @@ $(document).ready(function() {
       $(this).removeClass('done')
     }
   })
+
+  $('.to-do_form').on('submit', function(event) {
+    event.preventDefault();
+    
+    var taskDescription = $(this).find('input[name="description"]').val().trim();
+    if (taskDescription.length === 0) return;
+    
+    $.post('index.php', { description: taskDescription }, function(response) {
+      console.log(response); // Verifique a resposta no console do navegador
+
+      if (response && response.success === true) { 
+        alert('Task adicionada'); // Exibe a mensagem de sucesso
+        location.reload(); // Recarrega a página para exibir a nova task
+      } else {
+        alert('Erro ao adicionar a tarefa: ' + (response.error || 'Desconhecido'));
+      }
+    }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+      console.error("Erro AJAX:", textStatus, errorThrown);
+      alert('Erro ao conectar com o servidor!');
+    });
+  });
 })
