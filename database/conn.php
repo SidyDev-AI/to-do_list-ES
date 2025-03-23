@@ -1,6 +1,6 @@
 <?php
 function conectarBancoDados() {
-  $nomeBancoDados = 'database/to-do database.db';
+  $nomeBancoDados = 'database/tododatabase.db';
 
   try {
     $db = new SQLite3($nomeBancoDados);
@@ -25,6 +25,18 @@ function criarTabelaTask($db) {
     }
 }
 
+function adicionarTask($db, $description) {
+  $stmt = $db->prepare("INSERT INTO task (description) VALUES (:description)");
+  $stmt->bindValue(':description', $description, SQLITE3_TEXT);
+
+  if ($stmt->execute()) {
+      error_log("Tarefa adicionada: " . $description);
+      return true;
+  } else {
+      error_log("Erro ao adicionar tarefa: " . $db->lastErrorMsg());
+      return false;
+  }
+}
 try {
   $db = conectarBancoDados();
   criarTabelaTask($db);

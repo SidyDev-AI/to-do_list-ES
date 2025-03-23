@@ -10,6 +10,31 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
     $tasks[] = $row;
   }
 }
+
+## if para processar o formulário para adicionar uma nova task
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
+  $descricao = trim($_POST['description']);
+
+  if (strlen($descricao) > 0) {
+      $stmt = $db->prepare("INSERT INTO task (description) VALUES (:description)");
+      $stmt->bindValue(':description', $descricao, SQLITE3_TEXT);
+      
+      if ($stmt->execute()) {
+          $lastId = $db->lastInsertRowID();
+          $newTask = ['id' => $lastId, 'description' => $descricao];
+
+          error_log("Nova task adicionada com ID: " . $lastId); // Log no servidor
+          header('Content-Type: application/json');
+          echo json_encode(['success' => true, 'message' => 'Task adicionada, recarregue a página']);
+          exit();
+      } else {
+          error_log("Erro ao inserir no banco!");
+          header('Content-Type: application/json');
+          echo json_encode(['success' => false, 'error' => 'Erro ao inserir no banco de dados']);
+          exit();
+      }
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -24,6 +49,10 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
 <body>
   <section id="to-do">
     <h1>Things To Do</h1>
+    
+    <?php if (!empty($message)): ?> ## if para exibir a mensagem de sucesso ou erro
+  <p class="message"><?= htmlspecialchars($message) ?></p>
+<?php endif; ?>
 
     <form action="" class="to-do_form">
       <input type="text" name="description" placeholder="Write your task here" required>
