@@ -10,6 +10,16 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
     $tasks[] = $row;
   }
 }
+## if para processar o formulário para adicionar uma nova task
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['description'])) {
+  if (adicionarTask($db, $_POST['description'])) {
+    $message = "✅ Tarefa adicionada com sucesso!";
+  } else {
+    $message = "❌ Erro ao adicionar a tarefa.";
+  }
+    header("Location: index.php?message=" . urlencode($message));
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -24,6 +34,10 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
 <body>
   <section id="to-do">
     <h1>Things To Do</h1>
+    
+    <?php if (!empty($message)): ?> ## if para exibir a mensagem de sucesso ou erro
+  <p class="message"><?= htmlspecialchars($message) ?></p>
+<?php endif; ?>
 
     <form action="" class="to-do_form">
       <input type="text" name="description" placeholder="Write your task here" required>
