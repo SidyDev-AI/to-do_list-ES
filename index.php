@@ -1,6 +1,29 @@
 <?php
 require_once('database/conn.php');
 
+// Verificar a solicitação da exclusão de uma tarefa
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
+    $deleteId = $_POST['delete_id'];
+
+    try {
+        // Consulta de exclusão
+        $stmt = $db->prepare("DELETE FROM task WHERE id = :id");
+        $stmt->bindValue(':id', $deleteId, SQLITE3_INTEGER);
+
+        if ($stmt->execute()) {
+            error_log("Tarefa com ID $deleteId excluída com sucesso.");
+            // Após excluir, volta à página para atualizar a lista
+            header('Location: ' . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            error_log("Erro ao excluir a tarefa com ID $deleteId");
+        }
+    } catch (Exception $e) {
+        error_log("Erro ao excluir tarefa: " . $e->getMessage());
+    }
+}
+
+// Consultar todas as tarefas no banco de dados
 $tasks = [];
 $sql = $db->query("SELECT * FROM task");
 
@@ -11,8 +34,8 @@ if ($sql && $sql->fetchArray(SQLITE3_ASSOC)) {
   }
 }
 
-## if para processar o formulário para adicionar uma nova task
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
+// Processar o formulário para adicionar uma nova task
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description']) && !isset($_POST['delete_id'])) {
   $descricao = trim($_POST['description']);
 
   if (strlen($descricao) > 0) {
@@ -36,6 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
   }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -50,9 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
   <section id="to-do">
     <h1>Things To Do</h1>
     
-    <?php if (!empty($message)): ?> ## if para exibir a mensagem de sucesso ou erro
-  <p class="message"><?= htmlspecialchars($message) ?></p>
-<?php endif; ?>
+    <?php if (!empty($message)): ?> <!-- Exibir mensagens de sucesso ou erro -->
+      <p class="message"><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
 
     <form action="" class="to-do_form">
       <input type="text" name="description" placeholder="Write your task here" required>
@@ -63,29 +87,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['description'])) {
 
     <section id="tasks">
       <?php if (!empty($tasks)): ?>
-      <?php foreach($tasks as $task): ?>
-        <div class="task">
-          <input type="checkbox" name="progress" class="progress" <?= $task['completed'] ? 'checked' : '' ?> >
-          <p class="task-description">
-            <?= $task['description'] ?>
-          </p>
-          <div class="task-actions">
-            <a class="action-btn edit-btn">
-              <i class="fa-regular fa-pen-to-square"></i>
-            </a>
-            <a class="action-btn delete-btn">
-              <i class="fa-solid fa-eraser"></i>
-            </a>
-          </div>
+        <?php foreach($tasks as $task): ?>
+          <div class="task">
+            <input type="checkbox" name="progress" class="progress" <?= $task['completed'] ? 'checked' : '' ?> >
+            <p class="task-description">
+              <?= htmlspecialchars($task['description']) ?>
+            </p>
+            <div class="task-actions">
+              <a class="action-btn edit-btn">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </a>
 
-          <form action="" class="to-do_form edit-task hidden">
-            <input type="text" name="description" placeholder="Edit your task here">
-            <button type="submit" class="form-btn confirm-btn">
-              <i class="fa-solid fa-check"></i>
-            </button>
-          </form>
-        </div>
-      <?php endforeach ?>
+              <form method="POST" action="" style="display:inline;">
+                <input type="hidden" name="delete_id" value="<?= $task['id'] ?>"> 
+                <button type="submit" class="action-btn delete-btn" style="background: none; border: none; padding: 0;">
+                  <i class="fa-solid fa-eraser"></i>
+                </button>
+              </form>
+            </div>
+
+            <form action="" class="to-do_form edit-task hidden">
+              <input type="text" name="description" placeholder="Edit your task here">
+              <button type="submit" class="form-btn confirm-btn">
+                <i class="fa-solid fa-check"></i>
+              </button>
+            </form>
+          </div>
+        <?php endforeach ?>
       <?php endif ?>
     </section>
   </section>

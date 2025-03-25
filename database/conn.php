@@ -37,9 +37,35 @@ function adicionarTask($db, $description) {
       return false;
   }
 }
+
+function deletarTask($db, $id) {
+  $stmt = $db->prepare("DELETE FROM task WHERE id = :id");
+  $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+
+  if ($stmt->execute()) {
+      error_log("Tarefa com ID $id excluída.");
+      return true;
+  } else {
+      error_log("Erro ao excluir tarefa: " . $db->lastErrorMsg());
+      return false;
+  }
+}
+
 try {
+
   $db = conectarBancoDados();
   criarTabelaTask($db);
+
+  if (isset($_POST['delete_id'])) {
+    $deleteId = $_POST['delete_id'];
+    if (deletarTask($db, $deleteId)) {
+        echo "Tarefa excluída com sucesso!";
+    } else {
+        echo "Erro ao excluir a tarefa.";
+    }
+  }
+
 } catch (Exception $e) {
   echo "Erro: " . $e->getMessage();
 }
+?>
