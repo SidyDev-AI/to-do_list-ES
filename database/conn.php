@@ -44,10 +44,10 @@ function deletarTask($db, $id) {
 
   if ($stmt->execute()) {
       error_log("Tarefa com ID $id excluída.");
-      return true;
+      return ['success' => true, 'message' => 'Tarefa excluída com sucesso!'];
   } else {
       error_log("Erro ao excluir tarefa: " . $db->lastErrorMsg());
-      return false;
+      return ['success' => false, 'message' => 'Erro ao excluir a tarefa.'];
   }
 }
 
@@ -56,12 +56,14 @@ try {
   $db = conectarBancoDados();
   criarTabelaTask($db);
 
+  // Removido o processamento direto de $_POST para evitar saída
   if (isset($_POST['delete_id'])) {
     $deleteId = $_POST['delete_id'];
-    if (deletarTask($db, $deleteId)) {
-        echo "Tarefa excluída com sucesso!";
+    $resultado = deletarTask($db, $deleteId);
+    if ($resultado['success']) {
+        error_log($resultado['message']); // Log no servidor
     } else {
-        echo "Erro ao excluir a tarefa.";
+        error_log($resultado['message']); // Log no servidor
     }
   }
 

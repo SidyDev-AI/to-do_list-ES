@@ -1,11 +1,34 @@
 $(document).ready(function() {
   $('.edit-btn').on('click', function() {
-    var $task = $(this).closest('.task')
-    $task.find('.progress').addClass('hidden')
-    $task.find('.task-description').addClass('hidden')
-    $task.find('.task-actions').addClass('hidden')
-    $task.find('.edit-task').removeClass('hidden')
-  })
+    var $task = $(this).closest('.task');
+    var taskId = $task.data('id'); // Pegando o ID da tarefa
+    var $description = $task.find('.task-description');
+    var currentText = $description.text().trim();
+    
+    var $input = $('<input type="text" class="edit-input">').val(currentText);
+    $description.replaceWith($input);
+    $input.focus();
+    
+    $input.on('blur keydown', function(e) {
+      if (e.type === 'blur' || e.key === 'Enter') {
+        var newText = $input.val().trim();
+        if (newText.length > 0) {
+          // Atualiza no banco de dados via AJAX
+          $.post('update_task.php', { id: taskId, description: newText }, function(response) {
+            if (response.success) {
+              $input.replaceWith('<span class="task-description">' + newText + '</span>');
+            } else {
+              alert('Erro ao atualizar a tarefa!');
+            }
+          }, 'json').fail(function() {
+            alert('Erro ao conectar com o servidor!');
+          });
+        } else {
+          $input.replaceWith($description);
+        }
+      }
+    });
+  });
 
   $('.progress').on('click', function() {
     if($(this).is(':checked')) {
