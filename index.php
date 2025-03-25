@@ -3,24 +3,24 @@ require_once('database/conn.php');
 
 // Verificar a solicitação da exclusão de uma tarefa
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
-    $deleteId = $_POST['delete_id'];
+  $deleteId = $_POST['delete_id'];
 
-    try {
-        // Consulta de exclusão
-        $stmt = $db->prepare("DELETE FROM task WHERE id = :id");
-        $stmt->bindValue(':id', $deleteId, SQLITE3_INTEGER);
+  try {
+      // Consulta de exclusão
+      $stmt = $db->prepare("DELETE FROM task WHERE id = :id");
+      $stmt->bindValue(':id', $deleteId, SQLITE3_INTEGER);
 
-        if ($stmt->execute()) {
-            error_log("Tarefa com ID $deleteId excluída com sucesso.");
-            // Após excluir, volta à página para atualizar a lista
-            header('Location: ' . $_SERVER['PHP_SELF']);
-            exit();
-        } else {
-            error_log("Erro ao excluir a tarefa com ID $deleteId");
-        }
-    } catch (Exception $e) {
-        error_log("Erro ao excluir tarefa: " . $e->getMessage());
-    }
+      if ($stmt->execute()) {
+          error_log("Tarefa com ID $deleteId excluída com sucesso.");
+          // Após excluir, volta à página para atualizar a lista
+          header('Location: ' . $_SERVER['PHP_SELF']);
+          exit();
+      } else {
+          error_log("Erro ao excluir a tarefa com ID $deleteId");
+      }
+  } catch (Exception $e) {
+      error_log("Erro ao excluir tarefa: " . $e->getMessage());
+  }
 }
 
 // Consultar todas as tarefas no banco de dados
