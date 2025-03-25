@@ -1,7 +1,7 @@
 ### Universidade Federal do Tocantins
 ### Bacharelado em Ciência da Computação, 4º semestre
 ### Professor: Edeilson Milhomem da Silva
-### Alunos: José Borges, Lucas Moura, Thales Marques, Kawan de Sá
+### Alunos: José Borges, Lucas Moura, Thales Marques, Kawan de Sá, Anna Laura
 
 O projeto consiste em uma lista de tarefas onde o usuário pode adicionar, editar e remover tarefas da lista, são realizadas operações CRUD (Criar, Ler, Atualizar e Deletar) para gerenciar as tarefas.
 
@@ -22,6 +22,5 @@ O projeto consiste em uma lista de tarefas onde o usuário pode adicionar, edita
 | ------------------------------------------------------------------------------------------------------------------- | ----------------------- |
 | José Borges                                                                                                         | Front End e função read |
 | Lucas Moura                                                                                                         | função create           |
-| Thales Marques                                                                                                      | função edit             |
 | Kawan de Sá                                                                                                         | função delete           |
 | [Link do video de apresentação]()                                                                                   |                         |
