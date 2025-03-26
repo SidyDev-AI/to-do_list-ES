@@ -23,4 +23,4 @@ O projeto consiste em uma lista de tarefas onde o usuário pode adicionar, edita
 | José Borges                                                                                                         | Front End e função read |
 | Lucas Moura                                                                                                         | função create           |
 | Kawan de Sá                                                                                                         | função delete           |
-| [Link do video de apresentação]()                                                                                   |                         |
+| [Link do video de apresentação](https://drive.google.com/file/d/1hVvgT2-MYlktbqMvwlaS0PGCwtnAheb7/view?usp=sharing)                                                                                   |                         |
